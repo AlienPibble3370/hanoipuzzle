@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>Tháp Hà Nội</title>
+<style>
+body {
+    margin: 0;
+    background: linear-gradient(135deg, #1e1e2f, #2c2c54);
+    font-family: Arial, sans-serif;
+    color: white;
+    text-align: center;
+}
+
+h1 {
+    margin-top: 20px;
+}
+
+.game {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    margin-top: 50px;
+    gap: 80px;
+}
+
+.tower {
+    width: 120px;
+    height: 300px;
+    border: 2px solid #aaa;
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: center;
+    padding-bottom: 10px;
+    cursor: pointer;
+    position: relative;
+}
+
+.disk {
+    height: 20px;
+    margin: 3px 0;
+    border-radius: 4px;
+}
+
+.disk[data-size="1"] { width: 60px; background: #ff7675; }
+.disk[data-size="2"] { width: 80px; background: #74b9ff; }
+.disk[data-size="3"] { width: 100px; background: #55efc4; }
+
+#message {
+    margin-top: 30px;
+    font-size: 24px;
+    color: gold;
+    font-weight: bold;
+}
+</style>
+</head>
+<body>
+
+<h1>Tháp Hà Nội</h1>
+<p>Nhấp vào tháp để di chuyển đĩa. Chuyển toàn bộ sang cột thứ 3.</p>
+
+<div class="game">
+    <div class="tower" id="tower1"></div>
+    <div class="tower" id="tower2"></div>
+    <div class="tower" id="tower3"></div>
+</div>
+
+<div id="message"></div>
+
+<script>
+const towers = [
+    document.getElementById("tower1"),
+    document.getElementById("tower2"),
+    document.getElementById("tower3")
+];
+
+let selectedTower = null;
+
+// Tạo đĩa ban đầu
+function initGame() {
+    towers.forEach(t => t.innerHTML = "");
+    for (let i = 3; i >= 1; i--) {
+        const disk = document.createElement("div");
+        disk.classList.add("disk");
+        disk.dataset.size = i;
+        towers[0].appendChild(disk);
+    }
+}
+
+function getTopDisk(tower) {
+    return tower.lastElementChild;
+}
+
+function checkWin() {
+    if (towers[2].children.length === 3) {
+        document.getElementById("message").textContent = "GurXrl";
+    }
+}
+
+towers.forEach(tower => {
+    tower.addEventListener("click", () => {
+        if (!selectedTower) {
+            if (tower.children.length > 0) {
+                selectedTower = tower;
+                tower.style.borderColor = "yellow";
+            }
+        } else {
+            if (selectedTower === tower) {
+                selectedTower.style.borderColor = "#aaa";
+                selectedTower = null;
+                return;
+            }
+
+            const movingDisk = getTopDisk(selectedTower);
+            const targetDisk = getTopDisk(tower);
+
+            if (!targetDisk || 
+                parseInt(movingDisk.dataset.size) < parseInt(targetDisk.dataset.size)) {
+                tower.appendChild(movingDisk);
+            }
+
+            selectedTower.style.borderColor = "#aaa";
+            selectedTower = null;
+            checkWin();
+        }
+    });
+});
+
+initGame();
+</script>
+
+</body>
+</html>
